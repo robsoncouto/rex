@@ -1,13 +1,14 @@
+#define F_CPU 16000000UL
 
 #include<avr/io.h>
 #include<util/delay.h>
 #include<stdlib.h>
-#include"sprites.h"
+#include "sprites.h"
 #include "data.h"
 #include "stlcd.h"
 
-extern const unsigned char *cactsmall[6];
-extern unsigned char *cactbig[6];
+const unsigned char *cactsmall[6];
+unsigned char *cactbig[6];
 
 void create_cactus(cacti* cactus);
 int main(void){

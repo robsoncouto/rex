@@ -1,21 +1,17 @@
-#define F_CPU 16000000UL
 
 #include<avr/io.h>
 #include<util/delay.h>
 #include<stdlib.h>
-#include "sprites.h"
+#include"sprites.h"
 #include "data.h"
 #include "stlcd.h"
 
 const unsigned char *cactsmall[6];
-unsigned char *cactbig[6];
+const unsigned char *cactbig[6];
 
 void create_cactus(cacti* cactus);
 int main(void){
 
-  //array of bitmap pointers
-  //Chosen randomly
-  //Small cacti
   cactsmall[0]=cacts1;
   cactsmall[1]=cacts2;
   cactsmall[2]=cacts3;
@@ -23,7 +19,6 @@ int main(void){
   cactsmall[4]=cacts5;
   cactsmall[5]=cacts6;
 
-  //bigger cacti
   cactbig[0]=cactusb1;
   cactbig[1]=cactusb2;
   cactbig[2]=cactusb3;
@@ -78,12 +73,8 @@ int main(void){
     if (tail==10){
       tail=0;
     }
-    //checks on every cactus
     for(int j=0;j<10;j++){
       draw_cacti(&cac[j]);
-      if (cac[j].x) {
-
-      }
     }
     write_buffer();
 

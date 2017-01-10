@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USmA
 
  // some of this code was written by <cstone@pobox.com> originally; it is in the public domain.
 */
-
+#define F_CPU 8000000UL
 #include <avr/io.h>
 #include <util/delay.h>
 //#include <stdlib.h>

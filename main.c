@@ -42,9 +42,11 @@ const char points[]={8,13,19,23,28,31,35,37,40,41,43,44,43,41,40,37,35,31,28,23,
 
 void draw_ground(void){
   static uint8_t i=0;
-  drawbitmap(buffer, 0, 55, gnd+i, 128, 8, 1);
+  drawbitmap(buffer, 0, 56, gnd+i, 128-i, 8, 1);
+  drawbitmap(buffer, 128-i, 56, gnd, i, 8, 1);
   i++;
-  if(i==256)i=0;
+  if(i==128)i=0;
+
 }
 void draw_cactus(cacti cactus){
   drawbitmap(buffer, cactus.x, cactus.y, cactus.sprite, 8, 16, 1);
@@ -240,7 +242,7 @@ int main(void){
       draw_cacti(&cac[j]);
     }
     write_buffer(buffer);
-
+    
     // if(cac[0].x==0){
     //   cac[0].sprite=cactsmall[getrand(6)];//cactsmall[getrand(6)];
     //   cac[0].x=128;

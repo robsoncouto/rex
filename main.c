@@ -67,10 +67,10 @@ uint8_t buttonIsPressed(void){
 }
 void updateJump(dino* rex){
   if(rex->isJumping>0){
-    rex->y=40 -points[24-rex->isJumping];
+    rex->y=45 -points[24-rex->isJumping];
     rex->isJumping--;
   }else{
-    rex->y=35;
+    rex->y=40;
   }
 }
 void updateWalk(dino* rex){
@@ -242,7 +242,7 @@ int main(void){
       draw_cacti(&cac[j]);
     }
     write_buffer(buffer);
-    
+
     // if(cac[0].x==0){
     //   cac[0].sprite=cactsmall[getrand(6)];//cactsmall[getrand(6)];
     //   cac[0].x=128;

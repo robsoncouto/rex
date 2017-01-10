@@ -4,11 +4,11 @@
 # is public domain), believed to be neutral to any flavor of "make"
 # (GNU make, BSD make, SysV make)
 
-
+F_CPU=8000000UL
 MCU = atmega328p
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c stlcd.c glcdfont.c
+SRC = $(TARGET).c ST7565-T3/c/stlcd.c ST7565-T3/c/glcd.c ST7565-T3/c/glcdfont.c
 ASRC =
 OPT = s
 
@@ -38,7 +38,7 @@ CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes -fdiagnostics-color
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
-CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA)
+CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA) -DF_CPU=$(F_CPU)
 
 
 #ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs

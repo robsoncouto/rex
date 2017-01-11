@@ -121,6 +121,7 @@ void create_dino(dino* rex){
 
 const unsigned char *cactsmall[6];
 const unsigned char *cactbig[6];
+uint8_t nextCactus=0;
 
 #define MAX_CAC 3
 
@@ -164,7 +165,8 @@ int main(void){
     //clearPages();
     //clear_screen();
     draw_ground();
-    if(!read_button()){
+
+    if(buttonIsPressed()){
        if(!(Rex.isJumping)){
          Rex.isJumping=24;
        }
@@ -184,10 +186,13 @@ int main(void){
 
 
     if(nof_cacti<MAX_CAC){
-      if(getrand(6)==0){
-        create_cactus(&cac[tail]);
-        tail++;
-        nof_cacti++;
+      if((!cac[tail].alive)&&(nextCactus==0)){
+        if(getrand(16)==0){
+          create_cactus(&cac[tail]);
+          tail++;
+          nof_cacti++;
+          nextCactus=64;
+        }
       }
       if (tail==MAX_CAC){
         tail=0;
@@ -197,14 +202,18 @@ int main(void){
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].x<20)
         delete_cactus(&cac[j]);
-      if(cac[j].alive)
+        nof_cacti--;
+      if(cac[j].alive){
         draw_cacti(&cac[j]);
         cac[j].x--;
-        write_part(buffer,abs(cac[j].x),cac[j].y,cac[j].w,cac[j].h);
+        write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
+      }
     }
     write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
-    write_part(buffer,0,56,128,8);
-    write_part(buffer,110,0,20,8);
+    write_part(buffer,0,56,128,8);//gnd
+    write_part(buffer,110,0,20,8);//score
+    if(nextCactus)nextCactus--;
+
     //write_buffer(buffer);
     // if(cac[0].x==0){
     //   cac[0].sprite=cactsmall[getrand(6)];//cactsmall[getrand(6)];

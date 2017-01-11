@@ -65,10 +65,8 @@ void draw_cactusb(cacti cactus){
 void draw_dino(dino rex, uint8_t color){
   drawbitmap(buffer, rex.x, rex.y, rex.sprite, 20, 24, color);
 }
-void start(void){
-  DDRD=0x01;
-  PORTD=0x01;
-}
+
+
 uint8_t buttonIsPressed(void){
   return PIND&(1<<3);
 }
@@ -128,10 +126,23 @@ void create_dino(dino* rex){
 void init_hardware(void){
   //DDRC&=~(1<<PIN3);
   //ADC
+  BLA_DDR |= _BV(BLA);
+  BLA_PORT |= _BV(BLA);
+
+  LED_DDR |= _BV(LED);
+
+  LED_PORT |= _BV(LED);
+  st7565_init();
+
+  st7565_command(CMD_DISPLAY_ON);
+  st7565_command(CMD_SET_ALLPTS_NORMAL);
+  st7565_set_brightness(0x05);
+
   ADMUX = (1<<REFS0)|(1<<MUX1)|(1<<MUX0);//PIN ADC7 used (ADC exclusive)
   ADCSRA = (1<<ADEN)|(1<<ADPS2)|(1<<ADPS0);
   //button
   DDRD&=~(1<<7);
+  //PORTD=(1<<7);
 }
 uint16_t get_adc(uint8_t channel){
   ADMUX&=0xF0;
@@ -195,21 +206,10 @@ int main(void){
   create_cactus(&cac[tail]);
   tail++;
 
-  BLA_DDR |= _BV(BLA);
-  BLA_PORT |= _BV(BLA);
-
-  LED_DDR |= _BV(LED);
-
-  LED_PORT |= _BV(LED);
-  st7565_init();
-
-  st7565_command(CMD_DISPLAY_ON);
-  st7565_command(CMD_SET_ALLPTS_NORMAL);
-  st7565_set_brightness(0x05);
-  clear_screen();
 
 
   init_hardware();
+  clear_screen();
   uint8_t cc=0;
   clear_buffer(buffer);
 

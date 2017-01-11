@@ -30,9 +30,6 @@ uint16_t get_adc(uint8_t channel){
   while(ADCSRA & (1<<ADSC));
   return (ADC);
 }
-uint8_t read_button(void){
-  return PIND&(1<<7);
-}
 uint8_t getrand(uint8_t max){
   srand(get_adc(2));
   uint8_t randNumber;
@@ -40,5 +37,5 @@ uint8_t getrand(uint8_t max){
   return randNumber;
 }
 uint8_t buttonIsPressed(void){
-  return PIND&(1<<3);
+  return !(PIND&(1<<7));
 }

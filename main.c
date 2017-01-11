@@ -19,15 +19,20 @@ typedef struct {
    int min_jum_height;
    int speed;
    uint8_t jumpFrame;
-   int x;
-   int y;
+   int8_t x;
+   int8_t y;
+   uint8_t w;
+   uint8_t h;
    const uint8_t* sprite;
    uint8_t steps;
+   uint8_t hasChanged;
 }dino;
 
 typedef struct  {
    int x;
    int y;
+   uint8_t w;
+   uint8_t h;
    const uint8_t* sprite;
    uint8_t alive;
 }cacti;
@@ -35,6 +40,8 @@ typedef struct  {
 struct ground {
    int x;
    int y;
+   uint8_t w;
+   uint8_t h;
    const uint8_t* sprite;
 };
 
@@ -55,8 +62,8 @@ void draw_cactusb(cacti cactus){
   drawbitmap(buffer, cactus.x, cactus.y, cactus.sprite, 12, 24, 1);
 }
 
-void draw_dino(dino rex){
-  drawbitmap(buffer, rex.x, rex.y, rex.sprite, 20, 24, 1);
+void draw_dino(dino rex, uint8_t color){
+  drawbitmap(buffer, rex.x, rex.y, rex.sprite, 20, 24, color);
 }
 void start(void){
   DDRD=0x01;
@@ -76,7 +83,7 @@ void updateJump(dino* rex){
 void updateWalk(dino* rex){
   if(!(rex->isJumping)){
     rex->steps++;
-    if(rex->steps==3){
+    if(rex->steps==20){
       if (rex->sprite==dino3) {
         rex->sprite=dino4;
       }else{
@@ -109,6 +116,8 @@ void delete_cactus(cacti* cactus){
 void create_dino(dino* rex){
   rex->x = 20;
   rex->y = 35;
+  rex->w = 20;
+  rex->h = 24;
   rex->sprite=dino3;
   rex->isJumping=0;
   rex->steps=0;
@@ -206,7 +215,9 @@ int main(void){
 
   int k=1;
   while(1){
+
     clear_buffer(buffer);
+    clearPages();
     //clear_screen();
     draw_ground();
     if(!read_button()){
@@ -216,9 +227,9 @@ int main(void){
     }
     updateWalk(&Rex);
     updateJump(&Rex);
-    draw_dino(Rex);
+    draw_dino(Rex,1);
 
-    unsigned char s[10];
+    char s[10];
     itoa(Rex.y,s,10);
     drawstring(buffer, 100, 0,s);
     cc=0;
@@ -239,16 +250,21 @@ int main(void){
       tail=0;
     }
     for(int j=0;j<10;j++){
-      draw_cacti(&cac[j]);
+      //draw_cacti(&cac[j]);
     }
-    write_buffer(buffer);
-
+    write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
+    write_part(buffer,0,56,128,8);
+    //write_buffer(buffer);
     // if(cac[0].x==0){
     //   cac[0].sprite=cactsmall[getrand(6)];//cactsmall[getrand(6)];
     //   cac[0].x=128;
     // }
 
-    //_delay_ms(500);
+    _delay_ms(1);
+    if(Rex.isJumping){
+      draw_dino(Rex,0);
+      write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
+    }
     //i++;
     //if(i==50)i=0;
   }

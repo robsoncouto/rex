@@ -8,7 +8,7 @@ F_CPU=8000000UL
 MCU = atmega328p
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c ST7565-T3/c/stlcd.c ST7565-T3/c/glcd.c ST7565-T3/c/glcdfont.c
+SRC = $(TARGET).c ST7565-T3/c/stlcd.c ST7565-T3/c/glcd.c ST7565-T3/c/glcdfont.c hardware.c
 ASRC =
 OPT = s
 

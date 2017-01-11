@@ -3,10 +3,10 @@
 
 #include<avr/io.h>
 #include<util/delay.h>
-#include<stdlib.h>
 #include <string.h>
+#include<stdlib.h>
 #include"sprites.h"
-//#include "data.h"
+#include "hardware.h"
 #include "ST7565-T3/c/stlcd.h"
 #include "ST7565-T3/c/glcd.h"
 
@@ -53,7 +53,6 @@ void draw_ground(void){
   drawbitmap(buffer, 128-i, 56, gnd, i, 8, 1);
   i++;
   if(i==128)i=0;
-
 }
 void draw_cactus(cacti cactus){
   drawbitmap(buffer, cactus.x, cactus.y, cactus.sprite, 8, 16, 1);
@@ -66,10 +65,6 @@ void draw_dino(dino rex, uint8_t color){
   drawbitmap(buffer, rex.x, rex.y, rex.sprite, 20, 24, color);
 }
 
-
-uint8_t buttonIsPressed(void){
-  return PIND&(1<<3);
-}
 void updateJump(dino* rex){
   if(rex->isJumping>0){
     rex->y=45 -points[24-rex->isJumping];
@@ -102,7 +97,9 @@ void draw_cacti(cacti* cactus){
 
 void create_cactus(cacti* cactus){
   cactus->x=128;
-  cactus->y=40;
+  cactus->y=48;
+  cactus->w=11;
+  cactus->h=24;
   cactus->sprite=&cacts3[0];//cactsmall[getrand(6)];
   cactus->alive=1;
 }
@@ -122,62 +119,10 @@ void create_dino(dino* rex){
 }
 
 
-
-void init_hardware(void){
-  //DDRC&=~(1<<PIN3);
-  //ADC
-  BLA_DDR |= _BV(BLA);
-  BLA_PORT |= _BV(BLA);
-
-  LED_DDR |= _BV(LED);
-
-  LED_PORT |= _BV(LED);
-  st7565_init();
-
-  st7565_command(CMD_DISPLAY_ON);
-  st7565_command(CMD_SET_ALLPTS_NORMAL);
-  st7565_set_brightness(0x05);
-
-  ADMUX = (1<<REFS0)|(1<<MUX1)|(1<<MUX0);//PIN ADC7 used (ADC exclusive)
-  ADCSRA = (1<<ADEN)|(1<<ADPS2)|(1<<ADPS0);
-  //button
-  DDRD&=~(1<<7);
-  //PORTD=(1<<7);
-}
-uint16_t get_adc(uint8_t channel){
-  ADMUX&=0xF0;
-  ADMUX|=channel;
-  ADCSRA |= (1<<ADSC);
-  while(ADCSRA & (1<<ADSC));
-  return (ADC);
-}
-uint8_t read_button(void){
-  return PIND&(1<<7);
-}
-uint8_t getrand(uint8_t max){
-  srand(get_adc(2));
-  uint8_t randNumber;
-  randNumber=rand()%max;
-  return randNumber;
-}
-
-//TODO
-/*
-//update game:
-//-read button state
-//-draw dino
-//-move and draw cacti
-//-move ground
-//-check colisions
-//-display score
-//-write ADC code for rand
-
-*/
-
-
-//=========================================
 const unsigned char *cactsmall[6];
 const unsigned char *cactbig[6];
+
+#define MAX_CAC 3
 
 void create_cactus(cacti* cactus);
 int main(void){
@@ -198,7 +143,7 @@ int main(void){
 
   dino Rex;
   create_dino(&Rex);
-  cacti cac[10];
+  cacti cac[MAX_CAC];
   int nof_cacti=0;
   uint8_t tail=0;
 
@@ -213,11 +158,10 @@ int main(void){
   uint8_t cc=0;
   clear_buffer(buffer);
 
-  int k=1;
   while(1){
 
     clear_buffer(buffer);
-    clearPages();
+    //clearPages();
     //clear_screen();
     draw_ground();
     if(!read_button()){
@@ -231,36 +175,43 @@ int main(void){
 
     char s[10];
     itoa(Rex.y,s,10);
-    drawstring(buffer, 100, 0,s);
+    drawstring(buffer, 120, 0,s);
     cc=0;
     cc=getrand(6);
     memset(s,0,10);
     itoa(cc,s,10);
-    drawstring(buffer, 50, 0,s);
+    drawstring(buffer, 110, 0,s);
 
-    k++;
-    //draw_cactus(cac[0]);
-    if(nof_cacti<10){
-      if(getrand(6)%2==0){
+
+    if(nof_cacti<MAX_CAC){
+      if(getrand(6)==0){
         create_cactus(&cac[tail]);
         tail++;
+        nof_cacti++;
+      }
+      if (tail==MAX_CAC){
+        tail=0;
       }
     }
-    if (tail==10){
-      tail=0;
-    }
-    for(int j=0;j<10;j++){
-      //draw_cacti(&cac[j]);
+
+    for(int j=0;j<MAX_CAC;j++){
+      if(cac[j].x<20)
+        delete_cactus(&cac[j]);
+      if(cac[j].alive)
+        draw_cacti(&cac[j]);
+        cac[j].x--;
+        write_part(buffer,abs(cac[j].x),cac[j].y,cac[j].w,cac[j].h);
     }
     write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
     write_part(buffer,0,56,128,8);
+    write_part(buffer,110,0,20,8);
     //write_buffer(buffer);
     // if(cac[0].x==0){
     //   cac[0].sprite=cactsmall[getrand(6)];//cactsmall[getrand(6)];
     //   cac[0].x=128;
     // }
 
-    _delay_ms(1);
+    _delay_ms(10);
     if(Rex.isJumping){
       draw_dino(Rex,0);
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);

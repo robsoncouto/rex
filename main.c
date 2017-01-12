@@ -45,7 +45,9 @@ struct ground {
    const uint8_t* sprite;
 };
 
-const char points[]={8,13,19,23,28,31,35,37,40,41,43,44,43,41,40,37,35,31,28,23,19,13,8};
+//const char points[]={8,13,19,23,28,31,35,37,40,41,43,44,43,41,40,37,35,31,28,23,19,13,8};
+const char points[]={60,53,50,47,45,44,42,41,40,39,38,37,36,36,35,34,34,33,33,32,32,32,31,31,31,30,30,30,30,30,30};
+
 
 void draw_ground(void){
   static uint8_t i=0;
@@ -66,9 +68,17 @@ void draw_dino(dino rex, uint8_t color){
 }
 
 void updateJump(dino* rex){
+  static uint8_t index=0;
   if(rex->isJumping>0){
-    rex->y=45 -points[24-rex->isJumping];
-    rex->isJumping--;
+    if(rex->isJumping>31){
+      rex->y=points[index]-22;
+      rex->isJumping--;
+      index++;
+    }else{
+      index--;
+      rex->y=points[index]-22;
+      rex->isJumping--;
+    }
   }else{
     rex->y=40;
   }
@@ -168,7 +178,7 @@ int main(void){
 
     if(buttonIsPressed()){
        if(!(Rex.isJumping)){
-         Rex.isJumping=24;
+         Rex.isJumping=62;
        }
     }
     updateWalk(&Rex);
@@ -206,7 +216,7 @@ int main(void){
       if(cac[j].alive){
         draw_cacti(&cac[j]);
         cac[j].x--;
-        write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
+        //write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
       }
     }
     write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
@@ -220,11 +230,12 @@ int main(void){
     //   cac[0].x=128;
     // }
 
-    _delay_ms(10);
+    _delay_ms(1);
     if(Rex.isJumping){
       draw_dino(Rex,0);
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
     }
+
     //i++;
     //if(i==50)i=0;
   }

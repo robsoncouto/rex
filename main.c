@@ -29,8 +29,8 @@ typedef struct {
 }dino;
 
 typedef struct  {
-   int x;
-   int y;
+   uint8_t x;
+   uint8_t y;
    uint8_t w;
    uint8_t h;
    const uint8_t* sprite;
@@ -38,8 +38,8 @@ typedef struct  {
 }cacti;
 
 struct ground {
-   int x;
-   int y;
+   uint8_t x;
+   int8_t y;
    uint8_t w;
    uint8_t h;
    const uint8_t* sprite;
@@ -56,20 +56,20 @@ void draw_ground(void){
   i++;
   if(i==128)i=0;
 }
-void draw_cactus(cacti cactus){
-  drawbitmap(buffer, cactus.x, cactus.y, cactus.sprite, 8, 16, 1);
+uint8_t draw_cactus(cacti cactus,uint8_t color){
+  return drawbitmap2(buffer, cactus.x, cactus.y, cactus.sprite, cactus.w, cactus.h, color);
 }
-void draw_cactusb(cacti cactus){
-  drawbitmap(buffer, cactus.x, cactus.y, cactus.sprite, 12, 24, 1);
-}
+// uint8_t draw_cactusb(cacti cactus){
+//   return drawbitmap2(buffer, cactus.x, cactus.y, cactus.sprite, 12, 24, 1);
+// }
 
-void draw_dino(dino rex, uint8_t color){
-  drawbitmap(buffer, rex.x, rex.y, rex.sprite, 20, 24, color);
+uint8_t draw_dino(dino rex, uint8_t color){
+  return drawbitmap2(buffer, rex.x, rex.y, rex.sprite, 20, 24, color);
 }
 
 void updateJump(dino* rex){
   static uint8_t index=0;
-  if(rex->isJumping>0){
+  if(rex->isJumping){
     if(rex->isJumping>31){
       rex->y=points[index]-22;
       rex->isJumping--;
@@ -96,22 +96,24 @@ void updateWalk(dino* rex){
     }
   }
 }
-void draw_cacti(cacti* cactus){
-    if(cactus->alive){
-      draw_cactus(*cactus);
-    }
-    if(cactus->x==0){
-      cactus->alive=0;
-    }
-}
+// uint8_t draw_cacti(cacti* cactus){
+//   uint8_t status=0;
+//     if(cactus->alive){
+//       status=draw_cactus(*cactus);
+//     }
+//     if(cactus->x==0){
+//       cactus->alive=0;
+//     }
+//     return status;
+// }
 
 void create_cactus(cacti* cactus){
-  cactus->x=128;
+  cactus->x=110;
   cactus->y=48;
-  cactus->w=11;
-  cactus->h=24;
+  cactus->w=8;
+  cactus->h=16;
   cactus->sprite=&cacts3[0];//cactsmall[getrand(6)];
-  cactus->alive=1;
+  cactus->alive=0xFF;
 }
 void delete_cactus(cacti* cactus){
   cactus->alive=0;
@@ -138,43 +140,40 @@ uint8_t nextCactus=0;
 void create_cactus(cacti* cactus);
 int main(void){
 
-  cactsmall[0]=cacts1;
-  cactsmall[1]=cacts2;
-  cactsmall[2]=cacts3;
-  cactsmall[3]=cacts4;
-  cactsmall[4]=cacts5;
-  cactsmall[5]=cacts6;
-
-  cactbig[0]=cactusb1;
-  cactbig[1]=cactusb2;
-  cactbig[2]=cactusb3;
-  cactbig[3]=cactusb4;
-  cactbig[4]=cactusb5;
-  cactbig[5]=cactusb6;
+  // cactsmall[0]=cacts1;
+  // cactsmall[1]=cacts2;
+  // cactsmall[2]=cacts3;
+  // cactsmall[3]=cacts4;
+  // cactsmall[4]=cacts5;
+  // cactsmall[5]=cacts6;
+  //
+  // cactbig[0]=cactusb1;
+  // cactbig[1]=cactusb2;
+  // cactbig[2]=cactusb3;
+  // cactbig[3]=cactusb4;
+  // cactbig[4]=cactusb5;
+  // cactbig[5]=cactusb6;
 
   dino Rex;
   create_dino(&Rex);
   cacti cac[MAX_CAC];
-  int nof_cacti=0;
+  for(int j=0;j<MAX_CAC;j++){
+      create_cactus(&cac[j]);
+      delete_cactus(&cac[j]);
+  }
+  uint8_t nof_cacti=0;
   uint8_t tail=0;
-
-
-  create_cactus(&cac[tail]);
-  tail++;
-
-
 
   init_hardware();
   clear_screen();
-  uint8_t cc=0;
+  uint8_t cc=0,status=0;
   clear_buffer(buffer);
 
   while(1){
-
+    status=0;
     clear_buffer(buffer);
-    //clearPages();
     //clear_screen();
-    draw_ground();
+    //draw_ground();
 
     if(buttonIsPressed()){
        if(!(Rex.isJumping)){
@@ -187,21 +186,22 @@ int main(void){
 
     char s[10];
     itoa(Rex.y,s,10);
-    drawstring(buffer, 120, 0,s);
+    drawstring(buffer, 115, 0,s);
     cc=0;
     cc=getrand(6);
     memset(s,0,10);
-    itoa(cc,s,10);
-    drawstring(buffer, 110, 0,s);
+    itoa(nextCactus,s,10);
+    drawstring(buffer, 100, 0,s);
 
-
-    if(nof_cacti<MAX_CAC){
-      if((!cac[tail].alive)&&(nextCactus==0)){
+    //nof_cacti=0;
+    if(nof_cacti<=MAX_CAC){
+      if((!cac[tail].alive)&(nextCactus==0)){
         if(getrand(16)==0){
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
           nextCactus=64;
+          drawstring(buffer, 64, 0,"ok");
         }
       }
       if (tail==MAX_CAC){
@@ -210,33 +210,41 @@ int main(void){
     }
 
     for(int j=0;j<MAX_CAC;j++){
-      if(cac[j].x<20)
-        delete_cactus(&cac[j]);
-        nof_cacti--;
       if(cac[j].alive){
-        draw_cacti(&cac[j]);
-        cac[j].x--;
-        //write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
+        if(cac[j].x<20){
+          delete_cactus(&cac[j]);
+          nof_cacti--;
+          draw_cactus(cac[j],0);
+        }else{
+          status|=draw_cactus(cac[j],1);
+          cac[j].x--;
+        }
+        write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
       }
     }
     write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
     write_part(buffer,0,56,128,8);//gnd
-    write_part(buffer,110,0,20,8);//score
+    write_part(buffer,64,0,64,8);//score
+    if (status) {
+      while (1) {
+        /* code */
+      }
+    }
     if(nextCactus)nextCactus--;
 
-    //write_buffer(buffer);
-    // if(cac[0].x==0){
-    //   cac[0].sprite=cactsmall[getrand(6)];//cactsmall[getrand(6)];
-    //   cac[0].x=128;
-    // }
-
-    _delay_ms(1);
+    _delay_ms(10);
     if(Rex.isJumping){
       draw_dino(Rex,0);
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
     }
-
+    for(int j=0;j<MAX_CAC;j++){
+      if(cac[j].alive){
+        draw_cactus(cac[j],0);
+        write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
+      }
+    }
     //i++;
     //if(i==50)i=0;
   }
+
 }

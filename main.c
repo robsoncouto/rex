@@ -2,6 +2,7 @@
 #define F_CPU 8000000UL
 
 #include<avr/io.h>
+#include <avr/wdt.h>
 #include<util/delay.h>
 #include <string.h>
 #include<stdlib.h>
@@ -153,7 +154,7 @@ int main(void){
   // cactbig[3]=cactusb4;
   // cactbig[4]=cactusb5;
   // cactbig[5]=cactusb6;
-
+  
   dino Rex;
   create_dino(&Rex);
   cacti cac[MAX_CAC];
@@ -227,14 +228,16 @@ int main(void){
     write_part(buffer,64,0,64,8);//score
 
     if(nextCactus)nextCactus--;
-
+    draw_ground();
     _delay_ms(1);
     if (status) {
       while (1) {
-        /* code */
+      if(buttonIsPressed()){
+        wdt_enable(WDTO_1S);
+      }
       }
     }
-    draw_ground();
+
     write_part(buffer,0,56,128,8);//gnd
     if(Rex.isJumping){
       draw_dino(Rex,0);

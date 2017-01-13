@@ -1,6 +1,8 @@
 #include<avr/io.h>
 #include "ST7565-T3/c/stlcd.h"
 #include<stdlib.h>
+#include <stdint.h>
+#include <avr/wdt.h>
 
 void init_hardware(void){
   //DDRC&=~(1<<PIN3);
@@ -38,4 +40,17 @@ uint8_t getrand(uint8_t max){
 }
 uint8_t buttonIsPressed(void){
   return !(PIND&(1<<7));
+}
+
+
+uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
+
+void get_mcusr(void) \
+  __attribute__((naked)) \
+  __attribute__((section(".init3")));
+void get_mcusr(void)
+{
+  mcusr_mirror = MCUSR;
+  MCUSR = 0;
+  wdt_disable();
 }

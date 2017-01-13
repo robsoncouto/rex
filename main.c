@@ -108,7 +108,7 @@ void updateWalk(dino* rex){
 // }
 
 void create_cactus(cacti* cactus){
-  cactus->x=110;
+  cactus->x=128;
   cactus->y=48;
   cactus->w=8;
   cactus->h=16;
@@ -173,7 +173,7 @@ int main(void){
     status=0;
     clear_buffer(buffer);
     //clear_screen();
-    //draw_ground();
+
 
     if(buttonIsPressed()){
        if(!(Rex.isJumping)){
@@ -211,7 +211,7 @@ int main(void){
 
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){
-        if(cac[j].x<20){
+        if(cac[j].x<1){
           delete_cactus(&cac[j]);
           nof_cacti--;
           draw_cactus(cac[j],0);
@@ -223,16 +223,19 @@ int main(void){
       }
     }
     write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
-    write_part(buffer,0,56,128,8);//gnd
+
     write_part(buffer,64,0,64,8);//score
+
+    if(nextCactus)nextCactus--;
+
+    _delay_ms(1);
     if (status) {
       while (1) {
         /* code */
       }
     }
-    if(nextCactus)nextCactus--;
-
-    _delay_ms(10);
+    draw_ground();
+    write_part(buffer,0,56,128,8);//gnd
     if(Rex.isJumping){
       draw_dino(Rex,0);
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);

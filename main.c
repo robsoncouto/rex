@@ -21,8 +21,8 @@ typedef struct {
    int min_jum_height;
    int speed;
    uint8_t jumpFrame;
-   int8_t x;
-   int8_t y;
+   uint8_t x;
+   uint8_t y;
    uint8_t w;
    uint8_t h;
    const uint8_t* sprite;
@@ -80,6 +80,7 @@ void updateJump(dino* rex){
       index--;
       rex->y=points[index]-22;
       rex->isJumping--;
+      if(rex->isJumping==0)rex->y=40;
     }
   }else{
     rex->y=40;
@@ -126,7 +127,7 @@ void create_cactus(cacti* cactus){
   cactus->y=48;
   cactus->w=8;
   cactus->h=16;
-  cactus->sprite=sqr;//cactsmall[getrand(5)];//&cacts3[0];//
+  cactus->sprite=cactsmall[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
   cactus->alive=0xFF;
 }
 void delete_cactus(cacti* cactus){
@@ -136,7 +137,7 @@ void delete_cactus(cacti* cactus){
 
 void create_dino(dino* rex){
   rex->x = 20;
-  rex->y = 35;
+  rex->y = 40;
   rex->w = 20;
   rex->h = 24;
   rex->sprite=dino3;
@@ -205,7 +206,7 @@ int main(void){
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
-          nextCactus=40;
+          nextCactus=64;
           drawstring(buffer, 64, 0,"ok");
         }
       }
@@ -213,7 +214,7 @@ int main(void){
         tail=0;
       }
     }
-
+write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){
         if(cac[j].x<1){
@@ -228,12 +229,12 @@ int main(void){
         write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
       }
     }
-    write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
+
     write_part(buffer,64,0,64,8);//score
     //write_part(buffer,0,56,128,8);//gnd
     draw_ground();
-    write_part(buffer,0,48,128,16);//gnd
-
+    write_part(buffer,0,56,128,8);//gnd
+    //write_buffer(buffer);
 
     _delay_ms(1);
     if (status) {
@@ -244,7 +245,7 @@ int main(void){
       }
     }
     if(nextCactus)nextCactus--;
-    
+
     if(Rex.isJumping){
       draw_dino(Rex,0);
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);

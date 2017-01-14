@@ -11,6 +11,7 @@
 #include "ST7565-T3/c/stlcd.h"
 #include "ST7565-T3/c/glcd.h"
 
+
 //=========================================
 uint8_t buffer[128*64/8];
 
@@ -52,8 +53,8 @@ const char points[]={60,53,50,47,45,44,42,41,40,39,38,37,36,36,35,34,34,33,33,32
 
 void draw_ground(void){
   static uint8_t i=0;
-  drawbitmap(buffer, 0, 56, gnd+i, 128-i, 8, 1);
-  drawbitmap(buffer, 128-i, 56, gnd, i, 8, 1);
+  drawbitmap2(buffer, 0, 56, gnd+i, 128-i, 8, 1);
+  drawbitmap2(buffer, 128-i, 56, gnd, i, 8, 1);
   i++;
   if(i==128)i=0;
 }
@@ -108,12 +109,24 @@ void updateWalk(dino* rex){
 //     return status;
 // }
 
+const uint8_t* cactsmall[6];
+const uint8_t* cactbig[6];
+
+
+
+// cactbig[0]=cactusb1;
+// cactbig[1]=cactusb2;
+// cactbig[2]=cactusb3;
+// cactbig[3]=cactusb4;
+// cactbig[4]=cactusb5;
+// cactbig[5]=cactusb6;
+
 void create_cactus(cacti* cactus){
   cactus->x=128;
   cactus->y=48;
   cactus->w=8;
   cactus->h=16;
-  cactus->sprite=&cacts3[0];//cactsmall[getrand(6)];
+  cactus->sprite=cacts1;//cactsmall[getrand(5)];//&cacts3[0];//
   cactus->alive=0xFF;
 }
 void delete_cactus(cacti* cactus){
@@ -132,36 +145,23 @@ void create_dino(dino* rex){
 }
 
 
-const unsigned char *cactsmall[6];
-const unsigned char *cactbig[6];
 uint8_t nextCactus=0;
 
 #define MAX_CAC 3
 
 void create_cactus(cacti* cactus);
 int main(void){
+  cactsmall[0]=cacts1;
+  cactsmall[1]=cacts2;
+  cactsmall[2]=cacts3;
+  cactsmall[3]=cacts4;
+  cactsmall[4]=cacts5;
+  cactsmall[5]=cacts6;
 
-  // cactsmall[0]=cacts1;
-  // cactsmall[1]=cacts2;
-  // cactsmall[2]=cacts3;
-  // cactsmall[3]=cacts4;
-  // cactsmall[4]=cacts5;
-  // cactsmall[5]=cacts6;
-  //
-  // cactbig[0]=cactusb1;
-  // cactbig[1]=cactusb2;
-  // cactbig[2]=cactusb3;
-  // cactbig[3]=cactusb4;
-  // cactbig[4]=cactusb5;
-  // cactbig[5]=cactusb6;
-  
+
   dino Rex;
   create_dino(&Rex);
   cacti cac[MAX_CAC];
-  for(int j=0;j<MAX_CAC;j++){
-      create_cactus(&cac[j]);
-      delete_cactus(&cac[j]);
-  }
   uint8_t nof_cacti=0;
   uint8_t tail=0;
 
@@ -169,6 +169,10 @@ int main(void){
   clear_screen();
   uint8_t cc=0,status=0;
   clear_buffer(buffer);
+  for(int j=0;j<MAX_CAC;j++){
+      create_cactus(&cac[j]);
+      delete_cactus(&cac[j]);
+  }
 
   while(1){
     status=0;
@@ -201,7 +205,7 @@ int main(void){
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
-          nextCactus=64;
+          nextCactus=40;
           drawstring(buffer, 64, 0,"ok");
         }
       }
@@ -237,8 +241,8 @@ int main(void){
       }
       }
     }
-
-    write_part(buffer,0,56,128,8);//gnd
+    //write_part(buffer,0,56,128,8);//gnd
+    write_part(buffer,0,48,128,16);//gnd
     if(Rex.isJumping){
       draw_dino(Rex,0);
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);

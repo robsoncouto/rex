@@ -53,8 +53,8 @@ const char points[]={60,53,50,47,45,44,42,41,40,39,38,37,36,36,35,34,34,33,33,32
 
 void draw_ground(void){
   static uint8_t i=0;
-  drawbitmap2(buffer, 0, 56, gnd+i, 128-i, 8, 1);
-  drawbitmap2(buffer, 128-i, 56, gnd, i, 8, 1);
+  drawbitmap(buffer, 0, 56, gnd+i, 128-i, 8, 1);
+  drawbitmap(buffer, 128-i, 56, gnd, i, 8, 1);
   i++;
   if(i==128)i=0;
 }
@@ -122,11 +122,11 @@ const uint8_t* cactbig[6];
 // cactbig[5]=cactusb6;
 
 void create_cactus(cacti* cactus){
-  cactus->x=128;
+  cactus->x=127;// Fixed
   cactus->y=48;
   cactus->w=8;
   cactus->h=16;
-  cactus->sprite=cacts1;//cactsmall[getrand(5)];//&cacts3[0];//
+  cactus->sprite=sqr;//cactsmall[getrand(5)];//&cacts3[0];//
   cactus->alive=0xFF;
 }
 void delete_cactus(cacti* cactus){
@@ -170,7 +170,7 @@ int main(void){
   uint8_t cc=0,status=0;
   clear_buffer(buffer);
   for(int j=0;j<MAX_CAC;j++){
-      create_cactus(&cac[j]);
+      //create_cactus(&cac[j]);
       delete_cactus(&cac[j]);
   }
 
@@ -221,8 +221,9 @@ int main(void){
           nof_cacti--;
           draw_cactus(cac[j],0);
         }else{
+          cac[j].x--;//Wrong order -> buffer, update, LCD
+                     //right order -> update, buffer, LCD
           status|=draw_cactus(cac[j],1);
-          cac[j].x--;
         }
         write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
       }

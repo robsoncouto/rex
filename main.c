@@ -229,11 +229,12 @@ int main(void){
       }
     }
     write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
-
     write_part(buffer,64,0,64,8);//score
-
-    if(nextCactus)nextCactus--;
+    //write_part(buffer,0,56,128,8);//gnd
     draw_ground();
+    write_part(buffer,0,48,128,16);//gnd
+
+
     _delay_ms(1);
     if (status) {
       while (1) {
@@ -242,8 +243,8 @@ int main(void){
       }
       }
     }
-    //write_part(buffer,0,56,128,8);//gnd
-    write_part(buffer,0,48,128,16);//gnd
+    if(nextCactus)nextCactus--;
+    
     if(Rex.isJumping){
       draw_dino(Rex,0);
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);

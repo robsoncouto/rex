@@ -115,19 +115,20 @@ const uint8_t* cactbig[6];
 
 
 
-// cactbig[0]=cactusb1;
-// cactbig[1]=cactusb2;
-// cactbig[2]=cactusb3;
-// cactbig[3]=cactusb4;
-// cactbig[4]=cactusb5;
-// cactbig[5]=cactusb6;
 
 void create_cactus(cacti* cactus){
   cactus->x=127;// Fixed
-  cactus->y=48;
-  cactus->w=8;
-  cactus->h=16;
-  cactus->sprite=cactsmall[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
+  if(getrand(2)%2==0){
+    cactus->y=48;
+    cactus->w=8;
+    cactus->h=16;
+    cactus->sprite=cactsmall[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
+  }else{
+    cactus->y=40;
+    cactus->w=12;
+    cactus->h=24;
+    cactus->sprite=cactbig[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
+  }
   cactus->alive=0xFF;
 }
 void delete_cactus(cacti* cactus){
@@ -159,6 +160,13 @@ int main(void){
   cactsmall[4]=cacts5;
   cactsmall[5]=cacts6;
 
+
+  cactbig[0]=cactusb1;
+  cactbig[1]=cactusb2;
+  cactbig[2]=cactusb3;
+  cactbig[3]=cactusb4;
+  cactbig[4]=cactusb5;
+  cactbig[5]=cactusb6;
 
   dino Rex;
   create_dino(&Rex);
@@ -236,7 +244,7 @@ write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
     write_part(buffer,0,56,128,8);//gnd
     //write_buffer(buffer);
 
-    _delay_ms(1);
+    //_delay_ms(0);
     if (status) {
       while (1) {
       if(buttonIsPressed()){

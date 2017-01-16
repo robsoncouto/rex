@@ -148,8 +148,9 @@ void create_dino(dino* rex){
 
 
 uint8_t nextCactus=0;
-
+uint16_t oldscore=0,newscore=0;
 #define MAX_CAC 3
+
 
 void create_cactus(cacti* cactus);
 int main(void){
@@ -175,6 +176,8 @@ int main(void){
   uint8_t tail=0;
 
   init_hardware();
+  oldscore=get_score();
+  //update_score(0);
   clear_screen();
   uint8_t cc=0,status=0;
   clear_buffer(buffer);
@@ -199,12 +202,12 @@ int main(void){
     draw_dino(Rex,1);
 
     char s[10];
-    itoa(Rex.y,s,10);
-    drawstring(buffer, 115, 0,s);
+    itoa(newscore,s,10);
+    drawstring(buffer, 118, 0,s);
     cc=0;
     cc=getrand(6);
     memset(s,0,10);
-    itoa(nextCactus,s,10);
+    itoa(oldscore,s,10);
     drawstring(buffer, 100, 0,s);
 
     //nof_cacti=0;
@@ -227,6 +230,7 @@ write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
       if(cac[j].alive){
         if(cac[j].x<1){
           delete_cactus(&cac[j]);
+          newscore++;
           nof_cacti--;
           draw_cactus(cac[j],0);
         }else{
@@ -248,6 +252,7 @@ write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
     if (status) {
       drawstring(buffer,18,4,"G A M E  O V E R");
       write_part(buffer,18,32,100,8);//gnd
+      if(newscore>oldscore)update_score(newscore);
       while (1) {
       if(buttonIsPressed()){
         wdt_enable(WDTO_1S);

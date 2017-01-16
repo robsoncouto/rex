@@ -1,11 +1,12 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
-
+#define SCORE_LOCATION 0x3FE
 void init_hardware(void);
 uint16_t get_adc(uint8_t channel);
 uint8_t getrand(uint8_t max);
 uint8_t buttonIsPressed(void);
-
+void update_score(uint16_t score);
+uint16_t get_score(void);
 
 
 

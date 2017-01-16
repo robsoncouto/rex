@@ -1,8 +1,12 @@
-#include<avr/io.h>
-#include "ST7565-T3/c/stlcd.h"
-#include<stdlib.h>
-#include <stdint.h>
+#include <avr/io.h>
+#include <avr/eeprom.h>
 #include <avr/wdt.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+#include "hardware.h"
+#include "ST7565-T3/c/stlcd.h"
+
 
 void init_hardware(void){
   //DDRC&=~(1<<PIN3);
@@ -53,4 +57,10 @@ void get_mcusr(void)
   mcusr_mirror = MCUSR;
   MCUSR = 0;
   wdt_disable();
+}
+void update_score(uint16_t score){
+  eeprom_update_word(( uint16_t *)SCORE_LOCATION, score);
+}
+uint16_t get_score(void){
+  return eeprom_read_word((const uint16_t *)SCORE_LOCATION);
 }

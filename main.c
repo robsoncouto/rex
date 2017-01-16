@@ -246,6 +246,8 @@ write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
 
     //_delay_ms(0);
     if (status) {
+      drawstring(buffer,18,4,"G A M E  O V E R");
+      write_part(buffer,18,32,100,8);//gnd
       while (1) {
       if(buttonIsPressed()){
         wdt_enable(WDTO_1S);

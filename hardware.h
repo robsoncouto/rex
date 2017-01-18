@@ -8,7 +8,8 @@ uint8_t buttonIsPressed(void);
 void update_score(uint16_t score);
 uint16_t get_score(void);
 
-
+void init_timer(void);
+uint8_t get_rand2(void);
 
 //TODO
 /*

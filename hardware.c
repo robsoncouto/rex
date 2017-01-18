@@ -28,6 +28,7 @@ void init_hardware(void){
   //button
   DDRD&=~(1<<7);
   //PORTD=(1<<7);
+  init_timer();
 }
 uint16_t get_adc(uint8_t channel){
   ADMUX&=0xF0;
@@ -63,4 +64,14 @@ void update_score(uint16_t score){
 }
 uint16_t get_score(void){
   return eeprom_read_word((const uint16_t *)SCORE_LOCATION);
+}
+
+void init_timer(void){
+  TCCR0A=1<<WGM01; //CTC mode
+  TCCR0B=(0<<WGM02)|(1<<CS00); //using main clock
+  OCR0A=0x06; //Max
+  TCNT0=0; //start from zero
+}
+uint8_t get_rand2(void){
+  return TCNT0;
 }

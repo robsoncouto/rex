@@ -21,6 +21,10 @@ uint16_t get_score(void);
 //-display score
 //-write ADC code for rand
 
+//change random number generation
+//reverse  font
+//check glcd for improvements
+
 */
 
 #endif

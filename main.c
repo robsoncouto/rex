@@ -118,16 +118,16 @@ const uint8_t* cactbig[6];
 
 void create_cactus(cacti* cactus){
   cactus->x=127;// Fixed
-  if(getrand(2)%2==0){
+  if(get_rand2(2)%2==0){
     cactus->y=48;
     cactus->w=8;
     cactus->h=16;
-    cactus->sprite=cactsmall[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
+    cactus->sprite=cactsmall[get_rand2()];//cactsmall[getrand(5)];//&cacts3[0];//
   }else{
     cactus->y=40;
     cactus->w=12;
     cactus->h=24;
-    cactus->sprite=cactbig[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
+    cactus->sprite=cactbig[get_rand2()];//cactsmall[getrand(5)];//&cacts3[0];//
   }
   cactus->alive=0xFF;
 }

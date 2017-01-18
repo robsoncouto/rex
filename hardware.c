@@ -59,6 +59,10 @@ void get_mcusr(void)
   MCUSR = 0;
   wdt_disable();
 }
+
+void reset(void){
+  wdt_enable(WDTO_1S);
+}
 void update_score(uint16_t score){
   eeprom_update_word(( uint16_t *)SCORE_LOCATION, score);
 }
@@ -69,7 +73,7 @@ uint16_t get_score(void){
 void init_timer(void){
   TCCR0A=1<<WGM01; //CTC mode
   TCCR0B=(0<<WGM02)|(1<<CS00); //using main clock
-  OCR0A=0x06; //Max
+  OCR0A=0x05; //Max
   TCNT0=0; //start from zero
 }
 uint8_t get_rand2(void){

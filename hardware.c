@@ -71,10 +71,10 @@ uint16_t get_score(void){
 }
 
 void init_timer(void){
-  TCCR0A=1<<WGM01; //CTC mode
-  TCCR0B=(0<<WGM02)|(1<<CS00); //using main clock
+  TCCR0A=(1<<WGM01); //CTC mode
   OCR0A=0x05; //Max
   TCNT0=0; //start from zero
+  TCCR0B=(0 << CS01) | (1 << CS00); //using main clock
 }
 uint8_t get_rand2(void){
   return TCNT0;

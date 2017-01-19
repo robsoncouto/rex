@@ -23,6 +23,7 @@ typedef struct {
    uint8_t h;
    const uint8_t* sprite;
    uint8_t steps;
+   uint8_t hasChanged;
 }dino;
 
 typedef struct  {
@@ -59,19 +60,31 @@ uint8_t draw_cactus(cacti cactus,uint8_t color){
 }
 
 uint8_t draw_dino(dino rex, uint8_t color){
-  return drawbitmap2(buffer, rex.x, rex.y, rex.sprite, 20, 24, color);
+    return drawbitmap2(buffer, rex.x, rex.y, rex.sprite, 20, 24, color);
+}
+void Rex2screen(dino rex, uint8_t color){
+  draw_dino(rex,color);
+  write_part(buffer,rex.x,rex.y,rex.w,rex.h);
 }
 
 void updateJump(dino* rex){
   static uint8_t index=0;
   if(rex->isJumping){
     if(rex->isJumping>31){
+      if(points[index]!=rex->y){
+        rex->hasChanged=1;
+        Rex2screen(*rex, 0);
+      }
       rex->y=points[index];
       rex->isJumping--;
       index++;
     }else{
       index--;
-      rex->y=points[index]  ;
+      if(points[index]!=rex->y){
+        rex->hasChanged=1;
+        Rex2screen(*rex, 0);
+      }
+      rex->y=points[index];
       rex->isJumping--;
       if(rex->isJumping==0)rex->y=40;
     }
@@ -85,8 +98,12 @@ void updateWalk(dino* rex){
     if(rex->steps==20){
       if (rex->sprite==dino3) {
         rex->sprite=dino4;
+        rex->hasChanged=1;
+        Rex2screen(*rex, 0);
       }else{
         rex->sprite=dino3;
+        rex->hasChanged=1;
+        Rex2screen(*rex, 0);
       }
       rex->steps=0;
     }
@@ -127,6 +144,7 @@ void create_dino(dino* rex){
   rex->sprite=dino3;
   rex->isJumping=0;
   rex->steps=0;
+  rex->hasChanged=1;
 }
 
 void draw_score(uint16_t score){
@@ -213,7 +231,10 @@ int main(void){
         tail=0;
       }
     }
-    write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
+    if(Rex.hasChanged){
+      write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
+      Rex.hasChanged=0;
+    }
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){
         if(cac[j].x<1){
@@ -249,10 +270,6 @@ int main(void){
     }
     if(nextCactus)nextCactus--;
 
-    if(Rex.isJumping){
-      draw_dino(Rex,0);
-      write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
-    }
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){
         draw_cactus(cac[j],0);

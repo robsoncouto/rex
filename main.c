@@ -119,16 +119,16 @@ const uint8_t* cactbig[6];
 void create_cactus(cacti* cactus){
   cactus->x=127;// Fixed
   cactus->alive=0xFF;
-  if(get_rand2()%2==0){
+  if(getrand(2)%2==0){
     cactus->y=48;
     cactus->w=8;
     cactus->h=16;
-    cactus->sprite=cactsmall[get_rand2()];//cactsmall[getrand(5)];//&cacts3[0];//
+    cactus->sprite=cactsmall[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
   }else{
     cactus->y=40;
     cactus->w=12;
     cactus->h=24;
-    cactus->sprite=cactbig[get_rand2()];//cactsmall[getrand(5)];//&cacts3[0];//
+    cactus->sprite=cactbig[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
   }
 }
 void delete_cactus(cacti* cactus){
@@ -220,7 +220,7 @@ int main(void){
     //nof_cacti=0;
     if(nof_cacti<=MAX_CAC){
       if((!cac[tail].alive)&(nextCactus==0)){
-        if(get_rand2()==0){
+        if(getrand(16)==0){
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
@@ -257,7 +257,7 @@ int main(void){
     write_part(buffer,0,56,128,8);//gnd
     //write_buffer(buffer);
 
-    //_delay_ms(0);
+    _delay_ms(10);
     if (status) {
       drawstring(buffer,18,4,"G A M E  O V E R");
       write_part(buffer,18,32,100,8);//FIXME

@@ -113,9 +113,6 @@ void updateWalk(dino* rex){
 const uint8_t* cactsmall[6];
 const uint8_t* cactbig[6];
 
-
-
-
 void create_cactus(cacti* cactus){
   cactus->x=127;// Fixed
   cactus->alive=0xFF;
@@ -164,9 +161,11 @@ void draw_highscore(uint16_t high){
 
 #define MAX_CAC 3
 
-
 void create_cactus(cacti* cactus);
 int main(void){
+
+
+
   cactsmall[0]=cacts1;
   cactsmall[1]=cacts2;
   cactsmall[2]=cacts3;
@@ -184,47 +183,47 @@ int main(void){
 
   dino Rex;
   create_dino(&Rex);
-  cacti cac[MAX_CAC];
-  uint8_t nof_cacti=0;
-  uint8_t tail=0;
 
-  uint8_t nextCactus=0;
+  cacti cac[MAX_CAC];
+  uint8_t nof_cacti=0; //current number of cacti on screen
+  uint8_t tail=0;//the position of the new cactus on the ring
+  uint8_t frames2nxtCac=0; //frames to next cactus. This is a delay to the creation of
+                           //the next cactus. So the Rex has some space to land
   uint16_t highscore=0,score=0;
 
-  init_hardware();
-  highscore=get_score();
+  init_hardware(); //low level atmega stuff (PORTS, ACD, etc)
+  highscore=get_score();//FIXME make the score zero when first time (Not used memory=0xFF)
 
-  //update_score(0);
+  uint8_t bump=0; //collision between dino and catus kept here
   clear_screen();
-  uint8_t status=0;
   clear_buffer(buffer);
+
   for(int j=0;j<MAX_CAC;j++){
-      //create_cactus(&cac[j]);
       delete_cactus(&cac[j]);
   }
-  draw_highscore(highscore);
+  draw_highscore(highscore);//only time this is written to the screen
   draw_score(score);
 
   while(1){
-    status=0;
-    clear_buffer(buffer);
+    bump=0;
+
+    clear_buffer(buffer);//The memory is cleared, but not the LCD
     if(buttonIsPressed()){
        if(!(Rex.isJumping)){
-         Rex.isJumping=62;
+         Rex.isJumping=2*sizeof(points);//The array points has the positions for the jump (2x because is back an forth )
        }
     }
-    updateWalk(&Rex);
-    updateJump(&Rex);
+    updateWalk(&Rex); //Updates dino sprite (which leg touches the ground)
+    updateJump(&Rex); //Update the dinos position
     draw_dino(Rex,1);
 
-    //nof_cacti=0;
-    if(nof_cacti<=MAX_CAC){
-      if((!cac[tail].alive)&(nextCactus==0)){
+    if(nof_cacti<=MAX_CAC){ //Checks if there are MAX_CAC cacti on screen already
+      if((!cac[tail].alive)&(frames2nxtCac==0)){
         if(getrand(16)==0){
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
-          nextCactus=60;
+          frames2nxtCac=60;
         }
       }
       if (tail==MAX_CAC){
@@ -246,7 +245,7 @@ int main(void){
         }else{
           cac[j].x--;//Wrong order -> buffer, update, LCD
                      //right order -> update, buffer, LCD
-          status|=draw_cactus(cac[j],1);
+          bump|=draw_cactus(cac[j],1);
         }
         write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
       }
@@ -257,8 +256,8 @@ int main(void){
     write_part(buffer,0,56,128,8);//gnd
     //write_buffer(buffer);
 
-    _delay_ms(10);
-    if (status) {
+    _delay_ms(3);
+    if (bump) {
       drawstring(buffer,18,4,"G A M E  O V E R");
       write_part(buffer,18,32,100,8);//FIXME
       if(score>highscore)update_score(score);
@@ -268,7 +267,7 @@ int main(void){
       }
       }
     }
-    if(nextCactus)nextCactus--;
+    if(frames2nxtCac)frames2nxtCac--;
 
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){

@@ -165,7 +165,8 @@ void create_cactus(cacti* cactus);
 int main(void){
 
 
-
+  //Initise the arrays that keep the sprite addresses
+  //One of these values in gotten randomly at cacti creation
   cactsmall[0]=cacts1;
   cactsmall[1]=cacts2;
   cactsmall[2]=cacts3;
@@ -219,7 +220,8 @@ int main(void){
 
     if(nof_cacti<=MAX_CAC){ //Checks if there are MAX_CAC cacti on screen already
       if((!cac[tail].alive)&(frames2nxtCac==0)){
-        if(getrand(16)==0){
+        if(getrand(16)==0){//"1 in 16 chance" No, I know
+          //If the previous conditions are met, create a new cactus and delay creation of new cacti
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
@@ -243,24 +245,22 @@ int main(void){
           draw_cactus(cac[j],0);
           draw_score(score);
         }else{
-          cac[j].x--;//Wrong order -> buffer, update, LCD
-                     //right order -> update, buffer, LCD
-          bump|=draw_cactus(cac[j],1);
+          cac[j].x--;
+          bump|=draw_cactus(cac[j],1);//draw the cati to the buffer and gets a possible collision
         }
-        write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
+        write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);//draw the cati to the LCD
       }
     }
 
 
-    draw_ground();
-    write_part(buffer,0,56,128,8);//gnd
-    //write_buffer(buffer);
+    draw_ground();//draww ground to buffer
+    write_part(buffer,0,56,128,8);//draw gnd from buffer to LCD
 
-    _delay_ms(3);
+    _delay_ms(3);//FIXME needs a interrupt/timer scheme to keep fixed fps
     if (bump) {
       drawstring(buffer,18,4,"G A M E  O V E R");
-      write_part(buffer,18,32,100,8);//FIXME
-      if(score>highscore)update_score(score);
+      write_part(buffer,18,32,100,8);//FIXME put in the center
+      if(score>highscore)update_score(score); //writes new score to EEPROM`
       while (1) {
       if(buttonIsPressed()){
         reset();

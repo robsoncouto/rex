@@ -267,8 +267,9 @@ int main(void){
       }
       }
     }
-    if(frames2nxtCac)frames2nxtCac--;
+    if(frames2nxtCac)frames2nxtCac--;//Each frame decreases delay for new catcus
 
+    //Erase cacti from screen
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){
         draw_cactus(cac[j],0);

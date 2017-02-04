@@ -44,13 +44,13 @@ uint16_t get_adc(uint8_t channel){
   while(ADCSRA & (1<<ADSC));
   return (ADC);
 }
-uint8_t getrand(uint8_t max){
+uint8_t get_rand(uint8_t max){
   srand(get_adc(2));
   uint8_t randNumber;
   randNumber=rand()%max;
   return randNumber;
 }
-uint8_t buttonIsPressed(void){
+uint8_t button_pressed(void){
   uint8_t press=0;
   press=!(PINB&(1<<4));
   press|=!(PIND&(1<<7));

@@ -117,16 +117,16 @@ const uint8_t* cactbig[6];
 void create_cactus(cacti* cactus){
   cactus->x=127;// Fixed (It cant be more than 127)
   cactus->alive=0xFF;
-  if(getrand(2)%2==0){//gets the type of the cactus(big or small)
+  if(get_rand(2)%2==0){//gets the type of the cactus(big or small)
     cactus->y=48;
     cactus->w=8;
     cactus->h=16;
-    cactus->sprite=cactsmall[getrand(5)];
+    cactus->sprite=cactsmall[get_rand(5)];
   }else{
     cactus->y=40;
     cactus->w=12;
     cactus->h=24;
-    cactus->sprite=cactbig[getrand(5)];
+    cactus->sprite=cactbig[get_rand(5)];
   }
 }
 
@@ -210,7 +210,7 @@ int main(void){
     bump=0;
 
     clear_buffer(buffer);//The memory is cleared, but not the LCD
-    if(buttonIsPressed()){
+    if(button_pressed()){
        if(!(Rex.isJumping)){
          Rex.isJumping=2*sizeof(points);//The array points has the positions for the jump (2x because is back an forth )
        }
@@ -221,13 +221,13 @@ int main(void){
 
     if(nof_cacti<=MAX_CAC){ //Checks if there are MAX_CAC cacti on screen already
       if((!cac[tail].alive)&(frames2nxtCac==0)){
-        if(getrand(16)==0){//"1 in 16 chance" No, I know
+        if(get_rand(16)==0){//"1 in 16 chance" No, I know
           //If the previous conditions are met, create a new cactus and delay creation of new cacti
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
           frames2nxtCac=60;//can be changed
-
+        }
       }
       if (tail==MAX_CAC){
         tail=0;
@@ -257,7 +257,6 @@ int main(void){
       }
     }
 
-
     draw_ground();//draww ground to buffer
     write_part(buffer,0,56,128,8);//draw gnd from buffer to LCD
 
@@ -267,22 +266,20 @@ int main(void){
       write_part(buffer,18,32,100,8);//FIXME put in the center
       if(score>highscore)update_score(score); //writes new score to EEPROM`
       while (1) {
-      if(buttonIsPressed()){
+      if(button_pressed()){
         reset();//see hardware.c for implementation
       }
       }
     }
+
     if(frames2nxtCac)frames2nxtCac--;//Each frame decreases delay for new catcus
 
-    //Erase cacti from screen
+    //Erase cacti from LCD screen
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){
         draw_cactus(cac[j],0);
         write_part(buffer,cac[j].x,cac[j].y,cac[j].w,cac[j].h);
       }
     }
-    //i++;
-    //if(i==50)i=0;
   }
-
 }

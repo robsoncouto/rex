@@ -11,8 +11,7 @@
 #include "ST7565-T3/c/stlcd.h"
 #include "ST7565-T3/c/glcd.h"
 
-
-//=========================================
+//This is the buffer used to transfer data to the LCD
 uint8_t buffer[128*64/8];
 
 typedef struct {
@@ -43,8 +42,7 @@ struct ground {
    const uint8_t* sprite;
 };
 
-//const char points[]={8,13,19,23,28,31,35,37,40,41,43,44,43,41,40,37,35,31,28,23,19,13,8};
-//const char points[]={60,53,50,47,45,44,42,41,40,39,38,37,36,36,35,34,34,33,33,32,32,32,31,31,31,30,30,30,30,30,30};
+//Points used for the rex jump
 const char points[]={38,31,28,25,23,22,20,19,18,17,16,15,14,14,13,12,12,11,11,10,10,10,9,9,9,8,8,8,8,8,8};
 
 
@@ -55,6 +53,7 @@ void draw_ground(void){
   i++;
   if(i==128)i=0;
 }
+
 uint8_t draw_cactus(cacti cactus,uint8_t color){
   return drawbitmap2(buffer, cactus.x, cactus.y, cactus.sprite, cactus.w, cactus.h, color);
 }
@@ -92,6 +91,7 @@ void updateJump(dino* rex){
     rex->y=40;
   }
 }
+
 void updateWalk(dino* rex){
   if(!(rex->isJumping)){
     rex->steps++;
@@ -113,25 +113,26 @@ void updateWalk(dino* rex){
 const uint8_t* cactsmall[6];
 const uint8_t* cactbig[6];
 
+
 void create_cactus(cacti* cactus){
-  cactus->x=127;// Fixed
+  cactus->x=127;// Fixed (It cant be more than 127)
   cactus->alive=0xFF;
-  if(getrand(2)%2==0){
+  if(getrand(2)%2==0){//gets the type of the cactus(big or small)
     cactus->y=48;
     cactus->w=8;
     cactus->h=16;
-    cactus->sprite=cactsmall[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
+    cactus->sprite=cactsmall[getrand(5)];
   }else{
     cactus->y=40;
     cactus->w=12;
     cactus->h=24;
-    cactus->sprite=cactbig[getrand(5)];//cactsmall[getrand(5)];//&cacts3[0];//
+    cactus->sprite=cactbig[getrand(5)];
   }
 }
-void delete_cactus(cacti* cactus){
+
+void kill_cactus(cacti* cactus){
   cactus->alive=0;
 }
-
 
 void create_dino(dino* rex){
   rex->x = 20;
@@ -200,7 +201,7 @@ int main(void){
   clear_buffer(buffer);
 
   for(int j=0;j<MAX_CAC;j++){
-      delete_cactus(&cac[j]);
+      kill_cactus(&cac[j]);
   }
   draw_highscore(highscore);//only time this is written to the screen
   draw_score(score);
@@ -225,25 +226,29 @@ int main(void){
           create_cactus(&cac[tail]);
           tail++;
           nof_cacti++;
-          frames2nxtCac=60;
-        }
+          frames2nxtCac=60;//can be changed
+
       }
       if (tail==MAX_CAC){
         tail=0;
       }
     }
+
+    //Only writes the dino to the LCD when it has changed position or sprite
     if(Rex.hasChanged){
       write_part(buffer,Rex.x,Rex.y,Rex.w,Rex.h);
       Rex.hasChanged=0;
     }
+
+    //Draw cacti to the buffer, checks collision, and write them to the LCD
     for(int j=0;j<MAX_CAC;j++){
       if(cac[j].alive){
         if(cac[j].x<1){
-          delete_cactus(&cac[j]);
+          kill_cactus(&cac[j]);
           score++;
           nof_cacti--;
           draw_cactus(cac[j],0);
-          draw_score(score);
+          draw_score(score);//The score is also drawn to the LCD only when changed
         }else{
           cac[j].x--;
           bump|=draw_cactus(cac[j],1);//draw the cati to the buffer and gets a possible collision
@@ -263,7 +268,7 @@ int main(void){
       if(score>highscore)update_score(score); //writes new score to EEPROM`
       while (1) {
       if(buttonIsPressed()){
-        reset();
+        reset();//see hardware.c for implementation
       }
       }
     }

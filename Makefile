@@ -144,6 +144,9 @@ sym: $(TARGET).sym
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
+# Go back to the old firmware.
+firm_reset: $(TARGET).hex $(TARGET).eep
+		$(AVRDUDE) $(AVRDUDE_FLAGS) = -U flash:w:t3.hex $(AVRDUDE_WRITE_EEPROM)
 
 
 

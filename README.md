@@ -8,7 +8,7 @@ There is a blog post detailing how I wrote the code and run it in the component 
 
 English version: http://dragaosemchama.com.br/2017/01/rex/
 
-Portuguese version: Still writing
+Portuguese version: http://dragaosemchama.com.br/2017/02/t-rex-ptbt/
 
 ##Usage
 
